@@ -13,12 +13,12 @@ ARG CACHEBUST=0
 # Copy (or download/clone) source code into the build stage
 COPY src/ /tmp/src/
 # Build the app
-RUN cd /tmp/src ; \
-    cmake . ; \
-    cmake --build . ; \
+RUN cd /tmp ; \
+    cmake -S src -B build ; \
+    cmake --build build ; \
     mkdir /app ; \
-    cp server /app ; \
-    cp client /app
+    cp build/server /app ; \
+    cp build/client /app
 
 # ---------------============================= APP CONTAINER IMAGE ======================-----------------
 
