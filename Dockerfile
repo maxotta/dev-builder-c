@@ -10,3 +10,5 @@ RUN apt-get update && apt-get install -y \
     autoconf \
     git \
     curl
+
+CMD [ "sh", "-c", "while :; do cd; bash -i; echo '==> NOPE ! Exiting the shell would also stop the Docker container! Please close the terminal window instead.'; done" ]
