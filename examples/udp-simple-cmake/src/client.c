@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 
 	if (argc != 2) {
 		printf("Usage: %s <IP v4 address>\n", argv[0]);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	// Convert dotted quad notation to a sockaddr_in address structure

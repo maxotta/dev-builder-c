@@ -27,8 +27,8 @@ FROM ghcr.io/maxotta/kiv-psi-base-docker:latest
 # Copy the built app from the build stage into the app container image
 COPY --from=builder /app/ /app/
 
-CMD [ "sh", "-c", "while :; do cd; bash -i; echo '==> NOPE ! Exiting the shell would also stop the Docker container! Please close the terminal window instead.'; done" ]
-# CMD ["/app/server"]
+# Start the simple UDP server
+ENTRYPOINT /app/server
 
 #
 # EOF

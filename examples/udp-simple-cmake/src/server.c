@@ -42,20 +42,23 @@ int main() {
 	}
 	printf("Server bound to port %d. Waiting for client's message. Press [Ctrl-C] to interrupt.\n", PORT);
 
-	int len, n;
-	len = sizeof(client);
+	// The server main loop
+	for (;;) {
+		int len, n;
+		len = sizeof(client);
 
-	// Blocking receive. Wait for the client's message.
-	// The message is stored into 'buffer', the clien't addres into 'client'
-	n = recvfrom(sockfd, (char *)buffer, MAXLEN, 0, ( struct sockaddr *) &client, &len);
-	buffer[n] = '\0';
+		// Blocking receive. Wait for the client's message.
+		// The message is stored into 'buffer', the clien't addres into 'client'
+		n = recvfrom(sockfd, (char *)buffer, MAXLEN, 0, ( struct sockaddr *) &client, &len);
+		buffer[n] = '\0';
 
-	printf("Client [%s] sent: '%s'\n", inet_ntoa(client.sin_addr), buffer);
+		printf("Client [%s] sent: '%s'\n", inet_ntoa(client.sin_addr), buffer);
 
-	// Send the reply back to the client
-	sendto(sockfd, (const char *)hello_message, strlen(hello_message), 0, (const struct sockaddr *) &client, len);
-	printf("Hello message sent.\n");
-
+		// Send the reply back to the client
+		sendto(sockfd, (const char *)hello_message, strlen(hello_message), 0, (const struct sockaddr *) &client, len);
+		printf("Reply to client sent.\n");
+	}
+	// NOT REACHED
 	close(sockfd);
 	return EXIT_SUCCESS;
 }
