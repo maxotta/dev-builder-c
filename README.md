@@ -8,9 +8,9 @@ The basic idea behind multi-stage builds is, that you build your app in a Docker
 * it's platform independent - you can run it on any platform Docker is available for
 * it doesn't mess up your machine - you can easily dispose the whole thing when you're done with the `docker stop` and `docker rm` commands
 
-## About this image
+## About this container image
 
-This Ubuntu (Focal) based Docker image contains essential tools for building C apps:
+The main purpose of this container image is to be used as a **builder** in a Docker multi-stage build. It is based on the official [Ubuntu (20.04/focal) Docker image](https://hub.docker.com/_/ubuntu) contains essential tools for building C apps:
 * The GNU C, C++ Compiler
 * The `make` and `cmake` build utilities
 * The Git VCS
@@ -18,11 +18,26 @@ This Ubuntu (Focal) based Docker image contains essential tools for building C a
 
 For the complete list the essential build tools look at the [`build-essential`](https://packages.ubuntu.com/focal/build-essential) package.
 
+
+## Docker multi-stage builds explained
+
+The main idea of a [Docker multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/) is to use a separate ***"Stage 1"*** container for building the application and then add the built application to the target ***"Stage 2"*** container. The main benefits of this approach are:
+* automated setup of the build environment
+* smaller footprint of the taget container image
+
+The following diagram shows, how the multi-stage build works for the examples provided with this image:
+
+![Multi-stage build diagam](images/docker-multistage-build.png)
+
 ## How to use this image
 
-There are two examples provided in this repo:
-* `
+There are two examples of how to use the `dev-builder-c` image in a multi-stage image build provided in this repo:
+* [`udp-simple`](examples/udp-simple) - a simple UDP server/client example set to build with the `make` utility
+* [`udp-simple-cmake`](examples/udp-simple-cmake) - a simple UDP server/client example set to build with the `cmake` utility
 
+Let's get started with the `udp-simple-cmake` example.
+
+```
 docker build -t test/dev-builder-c .
 
 cd examples/udp-simple
@@ -51,7 +66,7 @@ docker exec -it dev-node bash
 cd /src
 cmake -S src -B build
 cmake --build build
-
+```
 
 
 https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
