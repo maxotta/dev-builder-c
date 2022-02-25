@@ -39,62 +39,89 @@ Let's get started with the `udp-simple-cmake` example. Open a terminal window an
 ```
 docker build -t test/udp-simple examples/udp-simple-cmake
 ```
+![Build exmple image](images/term-build.png)
+
 Now you have built a container image with the simple UDP example client and server, which can be found in the `/app` directory.
 Let's start 2 container based on this image:
 ```
 docker run -d --name node-1 test/udp-simple
 docker run -d --name node-2 test/udp-simple
 ```
+![Start containers](images/term-start-1.png)
+
 We will need to know the IP addresses of both containers, so we get them with the following commands:
 ```
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' node-1
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' node-2
 ```
-```
-(TODO: example output screenshot)
-```
+![Show IP addresses](images/term-ipaddr.png)
+
 In order to test the example app, we connect to the `node-1` container with the command:
 ```
 docker exec -it node-1 bash
 ```
-Let's look if the UDP server is really running:
+and look if the UDP server is really running:
 ```
 ps -ef
 ```
 The output should look something like this:
-```
-(TODO: screenshot)
-```
+
+![Connect to running container](images/term-connect-ps.png)
+
 Now we are ready to the test the UDP client/server app. At first we try to reach the local UDP server:
 ```
 /app/client 127.0.0.1
 ```
-```
-(TODO: screenshot)
-```
+![Test local UDP server](images/term-client-local.png)
+
 And also the UDP server running in the `node-2` container (use the IP address you've got previously with the `docker inspect` command for `node-2`):
 ```
 /app/client 172.17.0.3
 ```
-(TODO: cleanup description)
+![Test remote UDP server](images/term-client-remote.png)
+
+Now this is all folks and we can cleanup our workspace:
 ```
 docker stop node-1 node-2
 docker rm node-1 node-2
 ```
 ## Using the image for application development
-(TODO: description)
+
+The `dev-builder-c` image can be also used as it is for application development. The only difference to the previous use in a multi-stage build is, that you don't copy the source code into the container using the `COPY` instruction, but you tell Docker to mount your local directory containing the source code into the container. This is done by [using volumes](https://docs.docker.com/storage/volumes/) or more precisely [bind mounts](https://docs.docker.com/storage/bind-mounts/). You pass the local directory path and container mount point using the `-v` option to the `docker run` command. The following examples show how to mount the current directory (assuming it's the root of this cloned repository) into the container at `/src`.
+For Windows `cmd` use:
 ```
-# Windows command line (cmd)
-docker run -d -v %cd%:/src   --name dev-node test/dev-builder-c
-# Windows PowerShell
-docker run -d -v $(PWD):/src --name dev-node test/dev-builder-c
-# Linux/OS X command line
-docker run -d -v $(pwd):/src --name dev-node test/dev-builder-c
-
+docker run -d -v %cd%:/src --name dev-node ghcr.io/maxotta/dev-builder-c:latest
+```
+for Windows *PowerShell* use:
+```
+docker run -d -v $(PWD):/src --name dev-node ghcr.io/maxotta/dev-builder-c:latest
+```
+and for Linux, Mac OS or other Unix like systems use:
+```
+docker run -d -v $(pwd):/src --name dev-node ghcr.io/maxotta/dev-builder-c:latest
+```
+Then simply connect to the running `dev-node` container with
+```
 docker exec -it dev-node bash
-
-cd /src
+```
+![Inside the container](images/term-dev-1.png)
+and try to build the example app by yourself:
+```
+cd /src/examples/udp-simple-cmake
 cmake -S src -B build
 cmake --build build
 ```
+![Build the app manually](images/term-dev-2.png)
 
+Try also to make some changes to the source code (of course on the local machine outside the container) and rebuild the app.
+
+When you're finished, you can stop the container
+```
+docker stop dev-node
+```
+and resume your work later by starting the container again and connect to it
+```
+docker start dev-node
+docker exec -it dev-node bash
+```
+![Resume your work](images/term-dev-resume.png)

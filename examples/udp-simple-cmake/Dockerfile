@@ -5,7 +5,7 @@
 # -----------------=============================== BUILD STAGE ======================-------------------
 
 # Use the 'dev-builder-c' image as the project build stage
-FROM test/dev-builder-c AS builder
+FROM ghcr.io/maxotta/dev-builder-c:latest AS builder
 
 # IMPORTANT! Do not remove, this ensures fresh app builds
 ARG CACHEBUST=0
