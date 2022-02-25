@@ -97,38 +97,4 @@ cd /src
 cmake -S src -B build
 cmake --build build
 ```
-***
-docker build -t test/dev-builder-c .
-
-cd examples/udp-simple
-docker build -t test/udp-simple .
-docker run -d --name node-1 test/udp-simple
-
-docker exec -it node-1 bash
-
-docker stop node-1
-docker rm node-1
-
-cd examples/udp-simple-cmake
-docker build -t test/udp-simple .
-docker run -d --name node-1 test/udp-simple
-docker exec -it node-1 bash
-
-# Windows command line (cmd)
-docker run -d -v %cd%:/src   --name dev-node test/dev-builder-c
-# Windows PowerShell
-docker run -d -v $(PWD):/src --name dev-node test/dev-builder-c
-# Linux/OS X command line
-docker run -d -v $(pwd):/src --name dev-node test/dev-builder-c
-
-docker exec -it dev-node bash
-
-cd /src
-cmake -S src -B build
-cmake --build build
-```
-
-docker builder prune
-https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
-
 
